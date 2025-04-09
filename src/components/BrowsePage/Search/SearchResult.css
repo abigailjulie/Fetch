@@ -1,0 +1,7 @@
+.searchResult {
+    padding: .25rem .5rem;
+}
+
+.searchResult:hover {
+    background-color: var(--Light-grey);
+}

@@ -1,0 +1,4 @@
+.dogCards {
+  display: grid;
+  gap: 1rem;
+}

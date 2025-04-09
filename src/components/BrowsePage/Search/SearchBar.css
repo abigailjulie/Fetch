@@ -1,0 +1,20 @@
+.inputWrapper {
+  background-color: var(--White);
+  border-radius: 0.75rem;
+  height: 2.5rem;
+  padding: 0 1rem;
+  box-shadow: 0 0 8px var(--Light-grey);
+  width: 100%;
+}
+
+.inputField {
+  background-color: transparent;
+  border: none;
+  height: 100%;
+  font-size: 1.15rem;
+  width: 100%;
+}
+
+.inputField:focus {
+  outline: none;
+}

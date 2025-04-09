@@ -1,0 +1,29 @@
+body {
+  background-color: var(--Grey);
+  font-family: var(--Basic-font);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.loginContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--White);
+}
+
+.loginWrapper {
+  background-color: var(--Grey);
+  padding: 2rem;
+  border-radius: 1rem;
+  justify-content: center;
+}
+
+.loginTitle {
+  display: flex;
+  justify-content: center;
+}
