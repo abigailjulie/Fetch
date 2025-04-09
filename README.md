@@ -65,7 +65,7 @@ View match and prepare to meet your new best friend.
 ### Links
 
 - [GitHub](https://github.com/abigailjulie/Fetch)
-- [Vercel](https://fetch.vercel.app/)
+- [Vercel](https://fetch-silk.vercel.app/)
 
 ## My process
 
