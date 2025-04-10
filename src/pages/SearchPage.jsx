@@ -7,11 +7,15 @@ import "./SearchPage.css";
 export default function SearchPage() {
   return (
     <>
-      <div className="pt-3 px-3 h-100">
-        <LogoutBtn />
-        <SearchHero />
+      <div className="pt-3 d-flex flex-column min-vh-100">
+        <main className="flex-grow-1 px-3">
+          <LogoutBtn />
+          <SearchHero />
+        </main>
+        <div className="pt-3">
+          <Footer />
+        </div>
       </div>
-      <Footer />
     </>
   );
 }

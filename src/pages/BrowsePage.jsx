@@ -188,7 +188,9 @@ export default function BrowsePage() {
 
           <SearchBarLocation />
         </main>
-        <Footer />
+        <div className="pt-3">
+          <Footer />
+        </div>
       </div>
     </>
   );
