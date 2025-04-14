@@ -16,6 +16,7 @@ export default function BrowsePage() {
     dogIds,
     total,
     isLoading,
+    error,
     hasMoreNext,
     hasMorePrev,
     loadMoreNext,
@@ -76,6 +77,10 @@ export default function BrowsePage() {
 
           {isLoading && (
             <p className="pt-3 fs-2 text-center">Fetching available dogs...</p>
+          )}
+
+          {error && (
+            <p className="pt-3 fs-5 text-danger text-center">{error}</p>
           )}
 
           <section className="pt-5">

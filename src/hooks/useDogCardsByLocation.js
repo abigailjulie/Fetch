@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { fetchDogs, fetchDogsWithUrl } from "../utils/dogFetchUtils";
 
-export default function useBrowseDogs(selectedBreeds, sortOrder, pageSize) {
-  const [dogIds, setDogIds] = useState([]);
-  const [total, setTotal] = useState(null);
+export default function useDogCardsByLocation(zipCode, sortOrder, pageSize) {
+  const [dogIdsLocation, setDogIdsLocation] = useState([]);
+  const [total, setTotal] = useState(0);
   const [nextUrl, setNextUrl] = useState(null);
   const [prevUrl, setPrevUrl] = useState(null);
-  const [hasMoreNext, setHasMoreNext] = useState(null);
-  const [hasMorePrev, setHasMorePrev] = useState(null);
+  const [hasMoreNext, setHasMoreNext] = useState(false);
+  const [hasMorePrev, setHasMorePrev] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -17,20 +17,20 @@ export default function useBrowseDogs(selectedBreeds, sortOrder, pageSize) {
       setError(null);
       const dogResults = await fetchDogs({
         ...params,
-        breeds: [selectedBreeds],
+        zipCodes: [zipCode],
         sort: sortOrder,
         size: pageSize,
       });
 
-      setDogIds(dogResults.resultIds);
+      setDogIdsLocation(dogResults.resultIds);
       setTotal(dogResults.total);
-      setNextUrl(dogResults.next || null);
-      setPrevUrl(dogResults.prev || null);
+      setNext(dogResults.next || null);
+      setPrev(dogResults.prev || null);
       setHasMoreNext(!!dogResults.next);
       setHasMorePrev(!!dogResults.prev);
     } catch (error) {
-      console.log("Error fetching dogs:", error);
-      setError("Error fetching dogs");
+      console.log("Error fetching dogs by Location:", error);
+      setError("Error fetching dogs by Location");
     } finally {
       setIsLoading(false);
     }
@@ -47,11 +47,9 @@ export default function useBrowseDogs(selectedBreeds, sortOrder, pageSize) {
         setTotal(dogResults.total);
         setNextUrl(dogResults.next || null);
         setPrevUrl(dogResults.prev || null);
-        setHasMoreNext(!!dogResults.next);
-        setHasMorePrev(!!dogResults.prev);
       } catch (error) {
-        console.log("Error fetching next dogs:", error);
-        setError("Error fetching next dogs");
+        console.error("Error fetching next page:", error);
+        setError("Error fetching next page");
       } finally {
         setIsLoading(false);
       }
@@ -69,25 +67,17 @@ export default function useBrowseDogs(selectedBreeds, sortOrder, pageSize) {
         setTotal(dogResults.total);
         setNextUrl(dogResults.next || null);
         setPrevUrl(dogResults.prev || null);
-        setHasMoreNext(!!dogResults.next);
-        setHasMorePrev(!!dogResults.prev);
       } catch (error) {
-        console.log("Error fetching previous dogs:", error);
-        setError("Error fetching previous dogs");
+        console.error("Error fetching previous page:", error);
+        setError("Error fetching previous page");
       } finally {
         setIsLoading(false);
       }
     }
   };
 
-  useEffect(() => {
-    if (selectedBreeds) {
-      fetchDogIds({ from: 0 });
-    }
-  }, [selectedBreeds, sortOrder]);
-
   return {
-    dogIds,
+    dogIdsLocation,
     total,
     isLoading,
     error,

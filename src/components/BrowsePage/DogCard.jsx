@@ -21,7 +21,7 @@ export default function DogCard({
     if (dog) {
       addToFavorites(dog);
     } else {
-      console.error("Dog object is missing required data.");
+      console.error("Dog object is missing required data.", error);
     }
   };
 
