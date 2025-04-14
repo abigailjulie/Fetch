@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Card,
   ListGroup,
@@ -6,9 +6,7 @@ import {
   OverlayTrigger,
   Popover,
 } from "react-bootstrap";
-import { Location } from "../../models/Location";
-import { LocationResults } from "../../models/LocationResults";
-import { SearchLocations } from "../../models/api/SearchLocations";
+import useDogCard from "../../hooks/useDogCard";
 import "./DogCard.css";
 
 export default function DogCard({
@@ -17,36 +15,7 @@ export default function DogCard({
   dogIdsLocation,
   addToFavorites,
 }) {
-  const [searchedLocations, setSearchedLocations] = useState([]);
-  const [location, setLocation] = useState(null);
-
-  const handleSearchLocations = async () => {
-    if (dog.zipCodes && dog.zipCodes.length > 0) {
-      try {
-        const zipCode = dog.zipCodes;
-        const getDogLocations = new SearchLocations();
-        const dogLocation = await getDogLocations.getLocations(zipCode);
-        const location = new Location({
-          city: dogLocation.city || "no name",
-          county: dogLocation.county || "no name",
-          longitude: dogLocation.longitude || "no number",
-          latitude: dogLocation.latitude || "no number",
-          state: dogLocation.state || "no name",
-          zip_code: dogLocation.zip_code || "no number",
-        });
-        setLocation(location);
-        const locationResults = new LocationResults({
-          results: [location],
-          total: location.total,
-        });
-
-        setSearchedLocations(locationResults.results);
-      } catch (error) {
-        console.error("Failed to fetch locations", error);
-        setSearchedLocations([]);
-      }
-    }
-  };
+  const { location, error, isLoading, handleSearchLocations } = useDogCard(dog);
 
   const handleAddToFavorites = (dog) => {
     if (dog) {
@@ -59,17 +28,33 @@ export default function DogCard({
   const dynamicPopover = (
     <Popover id="popover-location">
       <Popover.Body>
-        {location ? (
-          <div>
-            City: {location.city} <br />
-            State: {location.state} <br />
-            County: {location.county} <br />
-            Zip Code: {location.zip_code} <br />
-            Longitude: {location.longitude} <br />
-            Latitude: {location.latitude}
-          </div>
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p>{error}</p>
+        ) : location ? (
+          <section>
+            <div>
+              City: <strong>{location.city}</strong>
+            </div>
+            <div>
+              State: <strong>{location.state}</strong>
+            </div>
+            <div>
+              County: <strong>{location.county}</strong>
+            </div>
+            <div>
+              Zip Code: <strong>{location.zip_code}</strong>
+            </div>
+            <div>
+              Longitude: <strong>{location.longitude}</strong>
+            </div>
+            <div>
+              Latitude: <strong>{location.latitude}</strong>
+            </div>
+          </section>
         ) : (
-          <div>No location data available.</div>
+          <p>No location data available.</p>
         )}
       </Popover.Body>
     </Popover>
