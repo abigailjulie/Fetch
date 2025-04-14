@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { SearchDogs } from "../models/api/SearchDogs";
-import { DogResults } from "../models/DogResults";
+import React, { useState } from "react";
+import useBrowseDogs from "../hooks/useBrowseDogs";
 import SearchBarLocation from "../components/BrowsePage/SearchByLocation/SearchBarLocation";
 import LogoutBtn from "../components/LogoutFavBtn/Logout";
 import DogBreeds from "../components/BrowsePage/DogBreeds";
@@ -9,16 +8,19 @@ import Footer from "../components/Footer";
 
 export default function BrowsePage() {
   const [selectedBreeds, setSelectedBreeds] = useState(null);
-  const [dogIds, setDogIds] = useState([]);
-  const [total, setTotal] = useState(null);
-  const [nextUrl, setNextUrl] = useState(null);
-  const [prevUrl, setPrevUrl] = useState(null);
-  const [hasMoreNext, setHasMoreNext] = useState(null);
-  const [hasMorePrev, setHasMorePrev] = useState(null);
   const [favorites, setFavorites] = useState([]);
   const [sortOrder, setSortOrder] = useState("name:asc");
-  const [isLoading, setIsLoading] = useState(false);
   const [pageSize] = useState(10);
+
+  const {
+    dogIds,
+    total,
+    isLoading,
+    hasMoreNext,
+    hasMorePrev,
+    loadMoreNext,
+    loadMorePrev,
+  } = useBrowseDogs(selectedBreeds, sortOrder, pageSize);
 
   const addToFavorites = (dog) => {
     setFavorites((prevFavorites) => {
@@ -42,108 +44,9 @@ export default function BrowsePage() {
     }
   };
 
-  const fetchDogIds = async (params = {}) => {
-    try {
-      setIsLoading(true);
-      const getSearchedDogs = new SearchDogs();
-      const searchParams = {
-        ...params,
-        breeds: [selectedBreeds],
-        sort: sortOrder,
-        size: pageSize,
-      };
-
-      const searchedDogs = await getSearchedDogs.getDogs(searchParams);
-
-      const dogResults = new DogResults({
-        resultIds: searchedDogs.resultIds,
-        total: searchedDogs.total,
-        next: searchedDogs.next,
-        prev: searchedDogs.prev,
-      });
-
-      setDogIds(dogResults.resultIds);
-      setTotal(dogResults.total);
-      setNextUrl(dogResults.next || null);
-      setPrevUrl(dogResults.prev || null);
-      setHasMoreNext(!!dogResults.next);
-      setHasMorePrev(!!dogResults.prev);
-    } catch (error) {
-      console.log("Error fetching dogs:");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleSortChange = (newSortOrder) => {
     setSortOrder(newSortOrder);
   };
-
-  const handleDogIdsReceived = (ids) => {
-    setDogIds(ids);
-  };
-
-  const loadMoreNext = async () => {
-    if (nextUrl) {
-      try {
-        setIsLoading(true);
-        const getSearchedDogs = new SearchDogs();
-        const searchedDogs = await getSearchedDogs.getDogsFromUrl(nextUrl);
-
-        const dogResults = new DogResults({
-          resultIds: searchedDogs.resultIds,
-          total: searchedDogs.total,
-          next: searchedDogs.next,
-          prev: searchedDogs.prev,
-        });
-
-        setDogIds(dogResults.resultIds);
-        setTotal(dogResults.total);
-        setNextUrl(dogResults.next || null);
-        setPrevUrl(dogResults.prev || null);
-        setHasMoreNext(!!dogResults.next);
-        setHasMorePrev(!!dogResults.prev);
-      } catch (error) {
-        console.log("Error fetching next dogs:");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-  };
-
-  const loadMorePrev = async () => {
-    if (prevUrl) {
-      try {
-        setIsLoading(true);
-        const getSearchedDogs = new SearchDogs();
-        const searchedDogs = await getSearchedDogs.getDogsFromUrl(prevUrl);
-
-        const dogResults = new DogResults({
-          resultIds: searchedDogs.resultIds,
-          total: searchedDogs.total,
-          next: searchedDogs.next,
-          prev: searchedDogs.prev,
-        });
-
-        setDogIds(dogResults.resultIds);
-        setTotal(dogResults.total);
-        setNextUrl(dogResults.next || null);
-        setPrevUrl(dogResults.prev || null);
-        setHasMoreNext(!!dogResults.next);
-        setHasMorePrev(!!dogResults.prev);
-      } catch (error) {
-        console.log("Error fetching previous dogs:");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (selectedBreeds) {
-      fetchDogIds({ from: 0 });
-    }
-  }, [selectedBreeds, sortOrder]);
 
   return (
     <>
@@ -163,6 +66,7 @@ export default function BrowsePage() {
             </p>
           </section>
         </header>
+
         <main className="px-5">
           <DogBreeds
             onBreedsSelected={handleBreedsSelected}
@@ -173,6 +77,7 @@ export default function BrowsePage() {
           {isLoading && (
             <p className="pt-3 fs-2 text-center">Fetching available dogs...</p>
           )}
+
           <section className="pt-5">
             <DogCards
               dogIds={dogIds}
@@ -188,6 +93,7 @@ export default function BrowsePage() {
 
           <SearchBarLocation />
         </main>
+
         <div className="pt-3">
           <Footer />
         </div>
