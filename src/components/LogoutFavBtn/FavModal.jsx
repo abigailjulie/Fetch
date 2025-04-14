@@ -1,49 +1,20 @@
 import React, { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { FindMatch } from "../../models/api/FindMatch";
-import { DogData } from "../../models/api/DogData";
-import { Dog } from "../../models/Dog";
+import useFavModal from "../../hooks/useFavModal";
 import FavoriteListIcon from "../BrowsePage/FavoriteListIcon";
 
 export default function FavModal({ favorites = [], removeFromFavorites }) {
   const [show, setShow] = useState(false);
-  const [matchedDog, setMatchedDog] = useState(null);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
   const favoriteIds = favorites.map((dog) => dog.id);
 
-  const handleMatchSubmit = async (favoriteIds) => {
-    try {
-      const getMatchedDog = new FindMatch();
-      const matchedDogId = await getMatchedDog.getMatch(favoriteIds);
-      if (matchedDogId && matchedDogId.match) {
-        handleMatchResult(matchedDogId.match);
-      } else {
-        console.log("No match Found");
-      }
-    } catch (error) {
-      console.log("Cannot fetch match:", error);
-    }
-  };
+  const { matchedDog, isLoading, error, findMatch } = useFavModal(favoriteIds);
 
-  const handleMatchResult = async (matchId) => {
-    try {
-      const getMatchDogData = new DogData();
-      const matchData = await getMatchDogData.getDogData([matchId]);
-      const dogData = new Dog({
-        id: matchData[0].id,
-        img: matchData[0].img,
-        name: matchData[0].name,
-        age: matchData[0].age,
-        zipCodes: matchData[0].zip_code,
-        breed: matchData[0].breed,
-      });
-      setMatchedDog(dogData);
-    } catch (error) {
-      console.log("Cannot fetch matched dog data:", error);
-    }
+  const handleMatchSubmit = () => {
+    findMatch();
   };
 
   return (
@@ -77,6 +48,10 @@ export default function FavModal({ favorites = [], removeFromFavorites }) {
               )}
             </div>
           )}
+
+          {isLoading && <p>Finding a match...</p>}
+
+          {error && <p>{error}</p>}
 
           {matchedDog && (
             <div className="d-flex flex-column">
