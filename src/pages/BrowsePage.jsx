@@ -96,7 +96,7 @@ export default function BrowsePage() {
             />
           </section>
 
-          <SearchBarLocation />
+          <SearchBarLocation addToFavorites={addToFavorites} />
         </main>
 
         <div className="pt-3">

@@ -17,13 +17,13 @@ export default function FavModal({ favorites = [], removeFromFavorites }) {
     findMatch();
   };
 
+  const favCount = matchedDog ? 1 : favorites?.length || 0;
+
   return (
     <>
       <Button type="button" variant="outline-dark" onClick={handleShow}>
         Favorites
-        <span className="badge text-bg-light ms-2">
-          {favorites?.length || 0}
-        </span>
+        <span className="badge text-bg-light ms-2">{favCount}</span>
       </Button>
       <Modal show={show} scrollable={true} keyboard={true} onHide={handleClose}>
         <Modal.Header closeButton>
@@ -56,7 +56,11 @@ export default function FavModal({ favorites = [], removeFromFavorites }) {
           {matchedDog && (
             <div className="d-flex flex-column">
               <h3 className="text-center">It's a match!</h3>
-              <FavoriteListIcon key={matchedDog.id} dog={matchedDog} />
+              <FavoriteListIcon
+                key={matchedDog.id}
+                dog={matchedDog}
+                removeFromFavorites={removeFromFavorites}
+              />
             </div>
           )}
         </Modal.Body>

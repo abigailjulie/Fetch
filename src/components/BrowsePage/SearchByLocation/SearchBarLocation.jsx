@@ -6,7 +6,7 @@ import SortAlpha from "../SortAlpha";
 import DogCardsByLocation from "./DogCardsByLocation";
 import "../Search/SearchBar.css";
 
-export default function SearchBarLocation() {
+export default function SearchBarLocation({ addToFavorites }) {
   const [locationInput, setLocationInput] = useState("");
   const [zipCode, setZipCode] = useState(null);
   const [sortOrder, setSortOrder] = useState("name:asc");
@@ -75,7 +75,12 @@ export default function SearchBarLocation() {
         </Button>
       </div>
       <SortAlpha currentSort={sortOrder} onSortChange={handleSortChange} />
-      <DogCardsByLocation zipCode={zipCode} sortOrder={sortOrder} />
+      <DogCardsByLocation
+        zipCode={zipCode}
+        sortOrder={sortOrder}
+        addToFavorites={addToFavorites}
+        searchKey={searchKey}
+      />
     </article>
   );
 }
