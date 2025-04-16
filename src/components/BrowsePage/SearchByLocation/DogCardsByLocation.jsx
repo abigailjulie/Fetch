@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import useDogCardsByLocation from "../../../hooks/useDogCardsByLocation";
 import DogCards from "../DogCards";
 
@@ -23,6 +23,13 @@ export default function DogCardsByLocation({
   return (
     <div className="pt-5">
       {error && <p className="pt-3 fs-5 text-danger text-center">{error}</p>}
+
+      {zipCode && dogIdsLocation.length === 0 && !isLoading && !error && (
+        <p className="pt-3 text-center fs-3">
+          No dogs found in this location. Try somewhere new!
+        </p>
+      )}
+
       <DogCards
         dogIdsLocation={dogIdsLocation}
         addToFavorites={addToFavorites}

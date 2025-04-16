@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchDogs, fetchDogsWithUrl } from "../utils/dogFetchUtils";
 
 export default function useDogCardsByLocation(zipCode, sortOrder, pageSize) {
@@ -10,6 +10,21 @@ export default function useDogCardsByLocation(zipCode, sortOrder, pageSize) {
   const [hasMorePrev, setHasMorePrev] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!zipCode) {
+      setDogIdsLocation([]);
+      setTotal(0);
+      setNextUrl(null);
+      setPrevUrl(null);
+      setHasMoreNext(null);
+      setHasMorePrev(null);
+      setError(null);
+      return;
+    }
+
+    fetchDogIds();
+  }, [zipCode, sortOrder]);
 
   const fetchDogIds = async (params = {}) => {
     try {
@@ -24,8 +39,8 @@ export default function useDogCardsByLocation(zipCode, sortOrder, pageSize) {
 
       setDogIdsLocation(dogResults.resultIds);
       setTotal(dogResults.total);
-      setNext(dogResults.next || null);
-      setPrev(dogResults.prev || null);
+      setNextUrl(dogResults.next || null);
+      setPrevUrl(dogResults.prev || null);
       setHasMoreNext(!!dogResults.next);
       setHasMorePrev(!!dogResults.prev);
     } catch (error) {
@@ -43,10 +58,12 @@ export default function useDogCardsByLocation(zipCode, sortOrder, pageSize) {
         setError(null);
         const dogResults = await fetchDogsWithUrl(nextUrl);
 
-        setDogIds(dogResults.resultIds);
+        setDogIdsLocation(dogResults.resultIds);
         setTotal(dogResults.total);
         setNextUrl(dogResults.next || null);
         setPrevUrl(dogResults.prev || null);
+        setHasMoreNext(!!dogResults.next);
+        setHasMorePrev(!!dogResults.prev);
       } catch (error) {
         console.error("Error fetching next page:", error);
         setError("Error fetching next page");
@@ -63,10 +80,12 @@ export default function useDogCardsByLocation(zipCode, sortOrder, pageSize) {
         setError(null);
         const dogResults = await fetchDogsWithUrl(prevUrl);
 
-        setDogIds(dogResults.resultIds);
+        setDogIdsLocation(dogResults.resultIds);
         setTotal(dogResults.total);
         setNextUrl(dogResults.next || null);
         setPrevUrl(dogResults.prev || null);
+        setHasMoreNext(!!dogResults.next);
+        setHasMorePrev(!!dogResults.prev);
       } catch (error) {
         console.error("Error fetching previous page:", error);
         setError("Error fetching previous page");

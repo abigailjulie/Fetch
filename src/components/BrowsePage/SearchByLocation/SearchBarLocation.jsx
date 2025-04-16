@@ -10,6 +10,7 @@ export default function SearchBarLocation() {
   const [locationInput, setLocationInput] = useState("");
   const [zipCode, setZipCode] = useState(null);
   const [sortOrder, setSortOrder] = useState("name:asc");
+  const [searchKey, setSearchKey] = useState(0);
 
   const handleLocationInputChange = async (e) => {
     const locationValue = e.target.value;
@@ -19,24 +20,29 @@ export default function SearchBarLocation() {
   const fetchLocation = async () => {
     if (locationInput.trim()) {
       try {
+        setZipCode(null);
         const filterLocations = new FilterLocations();
         const locationsData = await filterLocations.getFilteredLocations({
           city: locationInput,
         });
 
-        const results = locationsData.results;
+        if (locationsData.results) {
+          const results = locationsData.results;
+          const locationData = results[0];
+          const newLocation = new Location({
+            city: locationData.city,
+            county: locationData.county,
+            longitude: locationData.longitude,
+            latitude: locationData.latitude,
+            state: locationData.state,
+            zip_code: locationData.zip_code,
+          });
 
-        const locationData = results[0];
-        const newLocation = new Location({
-          city: locationData.city,
-          county: locationData.county,
-          longitude: locationData.longitude,
-          latitude: locationData.latitude,
-          state: locationData.state,
-          zip_code: locationData.zip_code,
-        });
-
-        setZipCode(newLocation.zip_code);
+          setSearchKey((prevKey) => prevKey + 1);
+          setZipCode(newLocation.zip_code);
+        } else {
+          console.log("No location data found for this city.");
+        }
       } catch (error) {
         console.log("Error fetching location data:", error);
       }
